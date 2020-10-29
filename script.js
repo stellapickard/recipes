@@ -1,45 +1,64 @@
 $(document).ready(function() {
   Object.keys(salads).forEach((k, i) => {
-    console.log(salads[k].name);
     var line = document.createElement("li");
     var text = document.createTextNode(salads[k].name.toString());
-    var link = document.createTextNode(salads[k].hyperlink.toString());
+
+    var a = document.createElement('a');
+    var linkText = document.createTextNode(salads[k].hyperlink.toString());
+      a.appendChild(linkText);
+      a.title = "my title text";
+      a.href = salads[k].hyperlink.toString();
+
     line.appendChild(text);
+    
     var element = document.getElementById("salad_list");
     element.appendChild(line);
-    element.appendChild(link);
+    element.appendChild(a);
   })
 });
 
-
 function check() {
+  $("#filtered_salad_list").empty();
+  $('#result').text('Salads that contain these ingredients:')
+
+  var searchArray = []
+  searchArray.push($('#first_ingredient').val());
+  searchArray.push($('#second_ingredient').val());
+  searchArray.push($('#third_ingredient').val());
+  var searchArrayLength = searchArray.length
+  console.log(searchArrayLength);
+  console.log(searchArray);
+
   //find salad name & ingredients
   Object.keys(salads).forEach((k, i) => {
-    // console.log(salads[k].name, salads[k].ingredients)
+
     var arrayLength = salads[k].ingredients.length
     var arrayOfSalads = []
-    //iterate through ingredients to see if it matches input
-    for (var i = 0; i < arrayLength; i++) {
-      if(salads[k].ingredients[i] === $('#first_ingredient').val()){
-        arrayOfSalads.push(salads[k].name);
+    for (var j = 0; j < searchArrayLength; j++){
+      for (var i = 0; i < arrayLength; i++) {
+        if(salads[k].ingredients[i] === searchArray[j]){
+          arrayOfSalads.push(salads[k].name);
+        }
       }
     }
-    //print array of salads
-    for (var x = 0; x < arrayOfSalads.length; x++){
-      var line = document.createElement("li");
-      var text = document.createTextNode(arrayOfSalads[x].toString());
-      line.appendChild(text);
-      var element = document.getElementById("filtered_salad_list");
-      element.appendChild(line);
-    }
+    filterSalads(arrayOfSalads)
   })
   return
 }
 
- 
+ function filterSalads(arrayOfSalads) {
+  var uniqueSalads = []
+  $.each(arrayOfSalads, function(i, el){
+    if($.inArray(el, uniqueSalads) === -1) uniqueSalads.push(el);
+  });
 
- 
-
-
-
-    
+  for (var x = 0; x < uniqueSalads.length; x++){
+    var line = document.createElement("li");
+    var text = document.createTextNode(uniqueSalads[x].toString());
+    line.appendChild(text);
+    var element = document.getElementById("filtered_salad_list");
+    element.appendChild(line);
+    $("input[type=text], textarea").val("");
+  }
+ }
+   
